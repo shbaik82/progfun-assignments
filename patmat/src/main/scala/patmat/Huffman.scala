@@ -136,7 +136,7 @@ object Huffman {
   }
   
   def makeOrderedTreeList(e: CodeTree, trees: List[CodeTree]): List[CodeTree] = trees match {
-    case x::xs => if (weight(e) < weight(x)) e::x::xs else x::makeOrderedTreeList(e, xs)
+    case x::xs => if (weight(e) <= weight(x)) e::x::xs else x::makeOrderedTreeList(e, xs)
     case Nil => List(e)
   }
 
@@ -160,7 +160,7 @@ object Huffman {
   def until(check: List[CodeTree] => Boolean, merge: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] = 
     if (check(trees)) trees 
     else if (trees.length == 2) List(makeCodeTree(trees(0), trees(1)))
-    else combine(trees)
+    else until(check, merge)(combine(trees))
 
   /**
    * This function creates a code tree which is optimal to encode the text `chars`.
@@ -168,7 +168,7 @@ object Huffman {
    * The parameter `chars` is an arbitrary text. This function extracts the character
    * frequencies from that text and creates a code tree based on them.
    */
-  def createCodeTree(chars: List[Char]): CodeTree = 
+  def createCodeTree(chars: List[Char]): CodeTree =
     until(singleton, combine)(makeOrderedLeafList(times(chars)))(0)
 
 
@@ -226,7 +226,7 @@ object Huffman {
       case Fork(left, right, _, weight) => 
         if (chars(left).contains(char)) 0::makeBitList(left, char)
         else if (chars(right).contains(char)) 1::makeBitList(right, char)
-        else throw new Error("No matching character")
+        else List()
       case Leaf(_, _) => List()
     }
 
@@ -241,7 +241,7 @@ object Huffman {
    */
   def codeBits(table: CodeTable)(char: Char): List[Bit] = table match {
     case (c, bits)::tail => if (c == char) bits else codeBits(tail)(char)
-    case Nil => throw new Error("No matching char")
+    case Nil => List()
   }
 
   /**
