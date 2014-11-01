@@ -25,16 +25,11 @@ object Main {
    */
   def balance(chars: List[Char]): Boolean = {
     def iter(n: Int, elems: List[Char]): Boolean = {
-      if (!elems.isEmpty) 
-        if (n < 0) false
-        else {
-          if (elems.head == '(') iter(n + 1, elems.tail)
-          else if (elems.head == ')') iter(n - 1, elems.tail)
-          else iter(n, elems.tail)
-      } else {
-        if (n != 0) false
-        else true
-      }
+      if (elems.isEmpty) !(n != 0)
+      else if (n < 0) false
+      else if (elems.head == '(') iter(n + 1, elems.tail)
+      else if (elems.head == ')') iter(n - 1, elems.tail)
+      else iter(n, elems.tail)
     }
     iter(0, chars)
   }
