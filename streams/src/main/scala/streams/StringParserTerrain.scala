@@ -58,7 +58,10 @@ trait StringParserTerrain extends GameDef {
       y <- levelVector(x).indices
     } yield (Pos(x, y),  levelVector(x)(y) != '-')
     val vm = Map[Pos, Boolean]() ++ vl
-    ((p: Pos) => vm(p))
+    ((p: Pos) => vm.get(p) match {
+      case Some(v) => v
+      case None => false
+    })
   }
 
   /**
